@@ -36,7 +36,7 @@ ESP32_SPIFFS_MisakiFNT::ESP32_SPIFFS_MisakiFNT(){}
 //*********美咲フォントライブラリ初期化3ファイル*************************************************************
 void ESP32_SPIFFS_MisakiFNT::SPIFFS_Misaki_Init3F(const char* UTF8SJIS_file, const char* Misaki_Half_Font_file, const char* Misaki_Zen_Font_file)
 {
-  SPIFFS.begin();
+  SPIFFS.begin(true);
   
   Serial.println("card initialized.");
   _UtoS = SPIFFS.open(UTF8SJIS_file, FILE_READ);
