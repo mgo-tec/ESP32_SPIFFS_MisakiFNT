@@ -83,80 +83,80 @@ void ESP32_SPIFFS_MisakiFNT::SPIFFS_Misaki_Close3F(){
 //*******************美咲フォント一括変換*************************************************************
 uint16_t ESP32_SPIFFS_MisakiFNT::Sjis_To_MisakiFNT_Read_ALL(uint8_t sj_txt[], uint16_t sj_length, uint8_t buf[][8])
 {
-	uint16_t fnt_adrs_half;
+  uint16_t fnt_adrs_half;
   uint8_t i;
-	uint16_t cnt = 0;
-	uint16_t buf_cnt = 0;
-  
-	for(cnt=0; cnt<sj_length; cnt++){
-		uint8_t dummy_buf1[8] = {0};
-  	uint8_t dummy_buf2[8] = {0};
-  	uint8_t dummy_buf3[8] = {0};
-		uint8_t dummy_buf4[8] = {0};
-		
-		if((Zenkaku_bridge == true) || (sj_txt[cnt]>=0x20 && sj_txt[cnt]<=0x7F) || (sj_txt[cnt]>=0xA1 && sj_txt[cnt]<=0xDF)){
-			if(Zenkaku_bridge == true){
-				for(i=0; i<8; i++){
-					dummy_buf1[i] = bridge_buf1[i] << 4;
-				}
-			}else{
-				fnt_adrs_half = 0x110 + (sj_txt[cnt] - 0x20)*8;
-				ESP32_SPIFFS_MisakiFNT::SPIFFS_MisakiFontRead(_MisakiH, fnt_adrs_half, dummy_buf1);
-			}
-			Zenkaku_bridge = false;
-			
-			if(cnt + 1 < sj_length){
-				cnt++;
-			}else{
-				for(i=0; i<8; i++){
-					buf[buf_cnt][i] = dummy_buf1[i];
-				}
-				return buf_cnt + 1;
-				break;
-			}
-			
-			if((sj_txt[cnt]>=0x20 && sj_txt[cnt]<=0x7F) || (sj_txt[cnt]>=0xA1 && sj_txt[cnt]<=0xDF)){
-				fnt_adrs_half = 0x110 + (sj_txt[cnt] - 0x20)*8;
+  uint16_t cnt = 0;
+  uint16_t buf_cnt = 0;
 
-				ESP32_SPIFFS_MisakiFNT::SPIFFS_MisakiFontRead(_MisakiH, fnt_adrs_half, dummy_buf2);
+  for(cnt=0; cnt<sj_length; cnt++){
+    uint8_t dummy_buf1[8] = {0};
+    uint8_t dummy_buf2[8] = {0};
+    uint8_t dummy_buf3[8] = {0};
+    uint8_t dummy_buf4[8] = {0};
 
-				for(i=0; i<8; i++){
-					dummy_buf2[i] = dummy_buf2[i]>>4;
-					buf[buf_cnt][i] = dummy_buf1[i] | dummy_buf2[i];
-				}			
+    if((Zenkaku_bridge == true) || (sj_txt[cnt]>=0x20 && sj_txt[cnt]<=0x7F) || (sj_txt[cnt]>=0xA1 && sj_txt[cnt]<=0xDF)){
+      if(Zenkaku_bridge == true){
+        for(i=0; i<8; i++){
+          dummy_buf1[i] = bridge_buf1[i] << 4;
+        }
+      }else{
+        fnt_adrs_half = 0x110 + (sj_txt[cnt] - 0x20)*8;
+        ESP32_SPIFFS_MisakiFNT::SPIFFS_MisakiFontRead(_MisakiH, fnt_adrs_half, dummy_buf1);
+      }
+      Zenkaku_bridge = false;
 
-				Zenkaku_bridge = false;
-				
-			}else if((sj_txt[cnt]>=0x81 && sj_txt[cnt]<=0x9F) || (sj_txt[cnt]>=0xE0 && sj_txt[cnt]<=0xEA)){
-				ESP32_SPIFFS_MisakiFNT::Sjis_To_Misaki_Font_Adrs(_MisakiZ, sj_txt[cnt], sj_txt[cnt+1], dummy_buf3);
-				for( uint8_t col = 0; col < 8; col++ ) {
-					for( uint8_t row = 0; row < 8; row++ ) {
-						bitWrite( dummy_buf4[7-row], 7-col , bitRead( dummy_buf3[col], 7-row ) );
-					}
-				}
-				for(i=0; i<8; i++){
-					bridge_buf1[i] = dummy_buf4[i];
-					buf[buf_cnt][i] = dummy_buf1[i] | dummy_buf4[i]>>4;
-				}
+      if(cnt + 1 < sj_length){
+        cnt++;
+      }else{
+        for(i=0; i<8; i++){
+          buf[buf_cnt][i] = dummy_buf1[i];
+        }
+        return buf_cnt + 1;
+        break;
+      }
 
-				Zenkaku_bridge = true;
-			}
-			
-			buf_cnt++;
-			
-		}else if((sj_txt[cnt]>=0x81 && sj_txt[cnt]<=0x9F) || (sj_txt[cnt]>=0xE0 && sj_txt[cnt]<=0xEA)){
-			ESP32_SPIFFS_MisakiFNT::Sjis_To_Misaki_Font_Adrs(_MisakiZ, sj_txt[cnt], sj_txt[cnt+1], dummy_buf3);
-			for( uint8_t col = 0; col < 8; col++ ) {
-				for( uint8_t row = 0; row < 8; row++ ) {
-					bitWrite( buf[buf_cnt][7-row], 7-col , bitRead( dummy_buf3[col], 7-row ) );
-				}
-			}
-			cnt++;
-			buf_cnt++;
-			Zenkaku_bridge = false;
-		}
-	}
-	return buf_cnt;
+      if((sj_txt[cnt]>=0x20 && sj_txt[cnt]<=0x7F) || (sj_txt[cnt]>=0xA1 && sj_txt[cnt]<=0xDF)){
+        fnt_adrs_half = 0x110 + (sj_txt[cnt] - 0x20)*8;
+
+        ESP32_SPIFFS_MisakiFNT::SPIFFS_MisakiFontRead(_MisakiH, fnt_adrs_half, dummy_buf2);
+
+        for(i=0; i<8; i++){
+          dummy_buf2[i] = dummy_buf2[i]>>4;
+          buf[buf_cnt][i] = dummy_buf1[i] | dummy_buf2[i];
+        }			
+
+        Zenkaku_bridge = false;
+
+      }else if((sj_txt[cnt]>=0x81 && sj_txt[cnt]<=0x9F) || (sj_txt[cnt]>=0xE0 && sj_txt[cnt]<=0xEA)){
+        ESP32_SPIFFS_MisakiFNT::Sjis_To_Misaki_Font_Adrs(_MisakiZ, sj_txt[cnt], sj_txt[cnt+1], dummy_buf3);
+        for( uint8_t col = 0; col < 8; col++ ) {
+          for( uint8_t row = 0; row < 8; row++ ) {
+            bitWrite( dummy_buf4[7-row], 7-col , bitRead( dummy_buf3[col], 7-row ) );
+          }
+        }
+        for(i=0; i<8; i++){
+          bridge_buf1[i] = dummy_buf4[i];
+          buf[buf_cnt][i] = dummy_buf1[i] | dummy_buf4[i]>>4;
+        }
+
+        Zenkaku_bridge = true;
+      }
+
+      buf_cnt++;
+
+    }else if((sj_txt[cnt]>=0x81 && sj_txt[cnt]<=0x9F) || (sj_txt[cnt]>=0xE0 && sj_txt[cnt]<=0xEA)){
+      ESP32_SPIFFS_MisakiFNT::Sjis_To_Misaki_Font_Adrs(_MisakiZ, sj_txt[cnt], sj_txt[cnt+1], dummy_buf3);
+      for( uint8_t col = 0; col < 8; col++ ) {
+        for( uint8_t row = 0; row < 8; row++ ) {
+          bitWrite( buf[buf_cnt][7-row], 7-col , bitRead( dummy_buf3[col], 7-row ) );
+        }
+      }
+      cnt++;
+      buf_cnt++;
+      Zenkaku_bridge = false;
+    }
+  }
+  return buf_cnt;
 }
 //*******************美咲フォント全変換*************************
 uint16_t ESP32_SPIFFS_MisakiFNT::StrDirect_MisakiFNT_readALL(String str, uint8_t font_buf[][8])
@@ -221,7 +221,7 @@ void ESP32_SPIFFS_MisakiFNT::SPIFFS_MisakiFontRead(File f1, uint32_t addrs, uint
 {
   if(f1){
     f1.seek(addrs);
-		f1.read(buf, 8);
+    f1.read(buf, 8);
   }else{
     Serial.println(F(" Misaki font file has not been uploaded to the SPIFFS"));
     delay(30000);

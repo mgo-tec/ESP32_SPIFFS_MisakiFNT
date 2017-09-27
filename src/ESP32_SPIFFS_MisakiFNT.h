@@ -42,14 +42,14 @@ public:
   void SPIFFS_Misaki_Close3F();
   uint16_t Sjis_To_MisakiFNT_Read_ALL(uint8_t sj_txt[], uint16_t sj_length, uint8_t buf[][8]);
   uint16_t StrDirect_MisakiFNT_readALL(String str, uint8_t font_buf[][8]);
-	void Sjis_To_Misaki_Font_Adrs(File f, uint8_t jisH, uint8_t jisL, uint8_t* buf);
+  void Sjis_To_Misaki_Font_Adrs(File f, uint8_t jisH, uint8_t jisL, uint8_t* buf);
   void SPIFFS_MisakiFontRead(File f1, uint32_t addrs, uint8_t* buf);
 
 private:
   File _UtoS;
   File _MisakiZ;
   File _MisakiH;
-  
+
   uint8_t bridge_buf1[8] = {0};
   boolean Zenkaku_bridge = false;
 
